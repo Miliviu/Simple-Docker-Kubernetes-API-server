@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+  labels:
+    app: flask
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      name: flask
+      labels:
+        app: flask
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: flask
+          image: localhost:5000/flask
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+        - name: nginx
+          image: nginx
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: nginx-config
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: flask-nginx
